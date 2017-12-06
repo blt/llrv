@@ -1,0 +1,11 @@
+[package]
+name = "llrv"
+version = "0.1.0"
+authors = ["Brian L. Troutwine <blt@postmates.com>"]
+
+[dependencies]
+lazy_static = "0.2"
+rand = "0.3.18"
+
+[profile.release]
+lto = true
