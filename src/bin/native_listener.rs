@@ -15,21 +15,29 @@ fn handle_client(stream: TcpStream) {
     let mut buf = Vec::with_capacity(4000);
     let mut reader = io::BufReader::new(stream);
 
-    let payload_size_in_bytes = match reader.read_u32::<BigEndian>() {
-        Ok(i) => i as usize,
-        Err(_) => return,
-    };
-    println!("PAYLOAD SIZE: {:?}", payload_size_in_bytes);
-    buf.resize(payload_size_in_bytes, 0);
-    if reader.read_exact(&mut buf).is_err() {
-        return;
-    }
-    match protobuf::parse_from_bytes::<Payload>(&buf) {
-        Ok(pyld) => {
-            println!("PAYLOAD: {:?}", pyld);
-        }
-        Err(_) => {
+    loop {
+        println!("LISTENER LOOP");
+        let payload_size_in_bytes = match reader.read_u32::<BigEndian>() {
+            Ok(i) => i as usize,
+            Err(_) => {
+                println!("READ PAYLOAD SIZE WAS ERROR");
+                return;
+            }
+        };
+        println!("PAYLOAD SIZE: {:?}", payload_size_in_bytes);
+        buf.resize(payload_size_in_bytes, 0);
+        if reader.read_exact(&mut buf).is_err() {
+            println!("READ EXACT WAS ERROR");
             return;
+        }
+        match protobuf::parse_from_bytes::<Payload>(&buf) {
+            Ok(pyld) => {
+                println!("PAYLOAD: {:?}", pyld);
+            }
+            Err(e) => {
+                println!("PAYLOAD ERROR: {:?}", e);
+                return;
+            }
         }
     }
 }
