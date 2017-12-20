@@ -42,9 +42,7 @@ fn main() {
     let socket = UdpSocket::bind(addr).unwrap();
     socket.set_nonblocking(true).unwrap();
 
-    // let types = ["c", "ms", "h", "g"];
-    let types = ["ms"];
-    // let types = ["c", "g"];
+    let types = ["c", "ms", "h", "g"];
 
     let pool_size = match env::args().nth(1) {
         None => 10_000,
@@ -52,6 +50,10 @@ fn main() {
     };
     let line_limit = match env::args().nth(2) {
         None => 10_000,
+        Some(i_str) => i_str.parse::<usize>().unwrap(),
+    };
+    let delay_limit = match env::args().nth(3) {
+        None => 1,
         Some(i_str) => i_str.parse::<usize>().unwrap(),
     };
 
@@ -104,7 +106,7 @@ fn main() {
         buf.clear();
         if lines_written > line_limit {
             use std::time;
-            let slp = time::Duration::from_millis(100);
+            let slp = time::Duration::from_millis(delay_limit as u64);
             thread::sleep(slp);
         }
     }

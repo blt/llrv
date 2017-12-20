@@ -10,11 +10,8 @@ rand = "0.3.18"
 byteorder = "1.0"
 
 [profile.release]
+opt-level = 3
 lto = true
-
-[[bin]]
-name = "log_gen"
-doc = false
 
 [[bin]]
 name = "native_listener"
