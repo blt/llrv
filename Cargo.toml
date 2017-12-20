@@ -5,7 +5,17 @@ authors = ["Brian L. Troutwine <blt@postmates.com>"]
 
 [dependencies]
 lazy_static = "0.2"
+protobuf = "1.4"
 rand = "0.3.18"
+byteorder = "1.0"
 
 [profile.release]
 lto = true
+
+[[bin]]
+name = "log_gen"
+doc = false
+
+[[bin]]
+name = "llrv"
+doc = false
