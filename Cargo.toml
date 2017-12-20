@@ -17,5 +17,9 @@ name = "log_gen"
 doc = false
 
 [[bin]]
+name = "native_listener"
+doc = false
+
+[[bin]]
 name = "llrv"
 doc = false
