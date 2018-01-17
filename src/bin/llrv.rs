@@ -1,13 +1,13 @@
 extern crate rand;
-
+extern crate clap;
 #[macro_use]
 extern crate lazy_static;
 
+use clap::{Arg, App};
 use rand::{thread_rng, Rng};
 use std::net::UdpSocket;
 use std::net::Ipv4Addr;
 use std::net::SocketAddrV4;
-use std::env;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time;
@@ -32,30 +32,38 @@ fn tick() {
 }
 
 fn main() {
+    let matches = App::new("llrv")
+        .about("stresses statsd servers")
+        .arg(Arg::with_name("udp_port")
+             .help("Sets the UDP port to ping")
+             .required(true))
+        .arg(Arg::with_name("pool_size")
+             .help("Total size of potential metric names to emit")
+             .required(true))
+        .arg(Arg::with_name("line_limit")
+             .help("Maximum number of lines to emit in a statsd payload")
+             .required(true))
+        .arg(Arg::with_name("delay_limit")
+             .help("Total number of milliseconds to wait between emitting payloads")
+             .required(true))
+        .get_matches();
+    
     let _join = thread::spawn(move || tick());
 
     let mut rng = thread_rng();
 
+    let types = ["c", "ms", "h", "g"];
+
+    let udp_port = matches.value_of("udp_port").unwrap().parse::<u16>().unwrap();
+    let pool_size = matches.value_of("pool_size").unwrap().parse::<usize>().unwrap();
+    let line_limit = matches.value_of("line_limit").unwrap().parse::<usize>().unwrap();
+    let delay_limit = matches.value_of("delay_limit").unwrap().parse::<u64>().unwrap();
+
     let addr = SocketAddrV4::new(Ipv4Addr::new(0, 0, 0, 0), 0);
-    let dest = SocketAddrV4::new(Ipv4Addr::new(0, 0, 0, 0), 8125);
+    let dest = SocketAddrV4::new(Ipv4Addr::new(0, 0, 0, 0), udp_port);
 
     let socket = UdpSocket::bind(addr).unwrap();
     socket.set_nonblocking(true).unwrap();
-
-    let types = ["c", "ms", "h", "g"];
-
-    let pool_size = match env::args().nth(1) {
-        None => 10_000,
-        Some(i_str) => i_str.parse::<usize>().unwrap(),
-    };
-    let line_limit = match env::args().nth(2) {
-        None => 10_000,
-        Some(i_str) => i_str.parse::<usize>().unwrap(),
-    };
-    let delay_limit = match env::args().nth(3) {
-        None => 1,
-        Some(i_str) => i_str.parse::<usize>().unwrap(),
-    };
 
     let mut pool: Vec<(String, &str)> = Vec::with_capacity(pool_size);
     let mut attempts = 10;

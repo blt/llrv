@@ -8,6 +8,7 @@ lazy_static = "0.2"
 protobuf = "1.4"
 rand = "0.3.18"
 byteorder = "1.0"
+clap = "2.29"
 
 [profile.release]
 opt-level = 3
