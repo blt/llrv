@@ -1,9 +1,9 @@
-extern crate llrv;
-extern crate rand;
-extern crate protobuf;
 extern crate byteorder;
+extern crate llrv;
+extern crate protobuf;
+extern crate rand;
 
-use std::net::{TcpStream, TcpListener};
+use std::net::{TcpListener, TcpStream};
 use byteorder::BigEndian;
 use byteorder::ReadBytesExt;
 use std::io::Read;
