@@ -11,11 +11,14 @@ byteorder = "1.0"
 clap = "2.29"
 
 [profile.release]
-opt-level = 3
 lto = true
 
 [[bin]]
 name = "native_listener"
+doc = false
+
+[[bin]]
+name = "native_emitter"
 doc = false
 
 [[bin]]

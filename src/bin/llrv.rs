@@ -102,7 +102,7 @@ fn main() {
     while attempts > 0 {
         for _ in 0..pool_size {
             let metric_name: String = rng.gen_ascii_chars().take(6).collect();
-            match pool.binary_search_by(|probe| probe.1.cmp(&metric_name)) {
+            match pool.binary_search_by(|probe| probe.0.cmp(&metric_name)) {
                 Ok(_) => {}
                 Err(idx) => {
                     let metric_type: &str = rng.choose(&types).unwrap();
