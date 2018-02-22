@@ -68,8 +68,6 @@ fn main() {
 
     let mut rng = thread_rng();
 
-    let types = ["c", "ms", "h", "g"];
-
     let udp_port = matches
         .value_of("udp_port")
         .unwrap()
@@ -99,13 +97,34 @@ fn main() {
 
     let mut pool: Vec<(String, &str)> = Vec::with_capacity(pool_size);
     let mut attempts = 10;
+    let mut gauges = 0;
+    let mut counters = 0;
+    let mut histograms = 0;
+    let mut timers = 0;
     while attempts > 0 {
         for _ in 0..pool_size {
             let metric_name: String = rng.gen_ascii_chars().take(6).collect();
             match pool.binary_search_by(|probe| probe.0.cmp(&metric_name)) {
                 Ok(_) => {}
                 Err(idx) => {
-                    let metric_type: &str = rng.choose(&types).unwrap();
+                    let metric_type: &str = match rng.gen_range(0, 100) {
+                        98...100 => {
+                            histograms += 1;
+                            "h"
+                        }
+                        95...97 => {
+                            timers += 1;
+                            "ms"
+                        }
+                        45...94 => {
+                            counters += 1;
+                            "c"
+                        }
+                        _ => {
+                            gauges += 1;
+                            "g"
+                        }
+                    };
                     pool.insert(idx, (metric_name.clone(), metric_type));
                 }
             };
@@ -122,6 +141,10 @@ fn main() {
     }
 
     println!("POOL FILLED");
+    println!("{:<2}GAUGES:     {}", "", gauges);
+    println!("{:<2}COUNTERS:   {}", "", counters);
+    println!("{:<2}HISTOGRAMS: {}", "", histograms);
+    println!("{:<2}TIMERS:     {}", "", timers);
 
     let mut buf = String::new();
     loop {
