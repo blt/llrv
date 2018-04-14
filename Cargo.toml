@@ -4,23 +4,23 @@ version = "0.1.0"
 authors = ["Brian L. Troutwine <blt@postmates.com>"]
 
 [dependencies]
+byteorder = "1.0"
+clap = "2.29"
 lazy_static = "0.2"
 protobuf = "1.4"
 rand = "0.3.18"
-byteorder = "1.0"
-clap = "2.29"
 
 [profile.release]
 lto = true
 
 [[bin]]
 name = "native_listener"
-doc = false
 
 [[bin]]
 name = "native_emitter"
-doc = false
+
+[[bin]]
+name = "log_gen"
 
 [[bin]]
 name = "llrv"
-doc = false
